@@ -1,0 +1,26 @@
+{
+  "name": "jphart-portfolio",
+  "version": "1.0.0",
+  "description": "Professional portfolio website for jphart.dev",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [
+    "portfolio",
+    "full-stack",
+    "developer",
+    "web-development"
+  ],
+  "author": "Paul Hartmann",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
