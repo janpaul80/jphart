@@ -122,84 +122,12 @@ window.addEventListener('scroll', () => {
 });
 
 // ===================================
-// CONTACT FORM
+// CONTACT FORM - FORMSPREE INTEGRATION
 // ===================================
 
-const contactForm = document.getElementById('contactForm');
-const formStatus = document.getElementById('formStatus');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', async e => {
-        e.preventDefault();
-
-        // Get form field values correctly
-        const nameField = document.getElementById('name');
-        const emailField = document.getElementById('email');
-        const messageField = document.getElementById('message');
-
-        const data = {
-            name: nameField.value.trim(),
-            email: emailField.value.trim(),
-            message: messageField.value.trim()
-        };
-
-        // Validate fields
-        if (!data.name || !data.email || !data.message) {
-            return showFormStatus('Please fill in all fields.', 'error');
-        }
-
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            return showFormStatus('Please enter a valid email address.', 'error');
-        }
-
-        // Validate reCAPTCHA
-        const recaptchaResponse = grecaptcha.getResponse();
-        if (!recaptchaResponse) {
-            return showFormStatus('Please complete the reCAPTCHA verification.', 'error');
-        }
-
-        const btn = contactForm.querySelector('button');
-        btn.disabled = true;
-        btn.textContent = 'Sending...';
-
-        try {
-            // Add reCAPTCHA token to data
-            data.recaptchaToken = recaptchaResponse;
-            
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                showFormStatus('Message sent successfully! I\'ll get back to you soon.', 'success');
-                contactForm.reset();
-                grecaptcha.reset(); // Reset reCAPTCHA
-            } else {
-                showFormStatus(result.error || 'Something went wrong. Please try again later.', 'error');
-            }
-        } catch (error) {
-            showFormStatus('Failed to send message. Please check your connection and try again.', 'error');
-            console.error('Form submission error:', error);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Send Message';
-        }
-    });
-}
-
-function showFormStatus(msg, type) {
-    formStatus.textContent = msg;
-    formStatus.className = `form-status ${type}`;
-    setTimeout(() => formStatus.className = 'form-status', 5000);
-}
+// Note: Form now submits directly to Formspree
+// No JavaScript interception needed - Formspree handles everything
+// The form will redirect to Formspree's thank you page after submission
 
 // ===================================
 // PRICING TOGGLE (MONTHLY/ANNUAL)
@@ -379,4 +307,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===================================
 
 console.log('👋 Looking for a developer?');
-console.log('📧 Reach out through the contact form.');
+console.log('� Reach out through the contact form.');
