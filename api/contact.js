@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { name, email, message } = req.body;
+    const { name, email, message, recaptchaToken } = req.body;
 
     // Validate input
     if (!name || !email || !message) {
@@ -20,6 +20,30 @@ export default async function handler(req, res) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({ error: 'Invalid email address' });
+    }
+
+    // Verify reCAPTCHA
+    if (!recaptchaToken) {
+        return res.status(400).json({ error: 'reCAPTCHA verification required' });
+    }
+
+    try {
+        const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+        });
+
+        const recaptchaData = await recaptchaResponse.json();
+
+        if (!recaptchaData.success) {
+            return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+        }
+    } catch (error) {
+        console.error('reCAPTCHA verification error:', error);
+        return res.status(500).json({ error: 'reCAPTCHA verification failed' });
     }
 
     try {
