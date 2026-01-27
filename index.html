@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+d captha<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -33,12 +33,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
     <!-- AI Widget Code -->
-    <script async
-        type="module"
+    <script 
         src="https://chatwidget-prod.web.app/embed/init.life.js"
         data-watermelon-widget-id="Ax1yIVTnJx"
-        data-watermelon-settings-id="16180"></script>
+        data-watermelon-settings-id="16180"
+        defer></script>
+    
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <!-- PIXI.js for glitch effect -->
@@ -876,6 +881,10 @@
                             <label for="message">Project Description</label>
                             <textarea id="message" name="message" rows="6" required></textarea>
                         </div>
+                        
+                        <!-- Google reCAPTCHA -->
+                        <div class="g-recaptcha" data-sitekey="6LfYourSiteKeyHere" data-theme="dark"></div>
+                        
                         <button type="submit" class="btn btn-primary">Send Message</button>
                         <div class="form-status" id="formStatus"></div>
                     </form>

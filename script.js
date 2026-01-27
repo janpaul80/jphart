@@ -130,11 +130,20 @@ if (contactForm) {
             return showFormStatus('Please enter a valid email address.', 'error');
         }
 
+        // Validate reCAPTCHA
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (!recaptchaResponse) {
+            return showFormStatus('Please complete the reCAPTCHA verification.', 'error');
+        }
+
         const btn = contactForm.querySelector('button');
         btn.disabled = true;
         btn.textContent = 'Sending...';
 
         try {
+            // Add reCAPTCHA token to data
+            data.recaptchaToken = recaptchaResponse;
+            
             const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
@@ -148,6 +157,7 @@ if (contactForm) {
             if (response.ok) {
                 showFormStatus('Message sent successfully! I\'ll get back to you soon.', 'success');
                 contactForm.reset();
+                grecaptcha.reset(); // Reset reCAPTCHA
             } else {
                 showFormStatus(result.error || 'Something went wrong. Please try again later.', 'error');
             }
