@@ -66,6 +66,30 @@ function hooking(observer, el) {
 }
 
 // ===================================
+// MOBILE MENU TOGGLE
+// ===================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+    }
+});
+
+// ===================================
 // SMOOTH SCROLL
 // ===================================
 
@@ -349,96 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
         new HeroGlitch();
     }
 });
-
-// ===================================
-// WATERMELON AI WIDGET
-// ===================================
-
-(function() {
-    const widgetId = 'Ax1yIVTnJx';  // Verify this ID is correct!
-    const settingsId = 16180;
-    const environment = 'prod';
-
-    // Function to inject Watermelon widget
-    function injectWatermelonWidget(first, last, email, phone, userId) {
-        // Create script element
-        const script = document.createElement('script');
-        script.src = 'https://chatwidget-prod.web.app/embed/init.life.js';
-        script.setAttribute('data-watermelon-widget-id', widgetId);
-        script.setAttribute('data-watermelon-settings-id', settingsId);
-        script.async = true;
-        
-        // Add to document
-        document.head.appendChild(script);
-        
-        // If user data provided, send login message after widget loads
-        if (first || last || email || phone || userId) {
-            script.onload = () => {
-                setTimeout(() => {
-                    const iframe = document.querySelector('.watermelon-embed-frame');
-                    if (iframe && iframe.contentWindow) {
-                        iframe.contentWindow.postMessage({
-                            type: 'login',
-                            payload: {
-                                first_name: first,
-                                last_name: last,
-                                email: email,
-                                phone: phone,
-                                user_id: userId,
-                            }
-                        }, '*');
-                    }
-                }, 2000);
-            };
-        }
-    }
-
-    // Auto-inject widget on page load
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => injectWatermelonWidget());
-    } else {
-        injectWatermelonWidget();
-    }
-
-    // Global login function (call this after user logs in)
-    window.watermelonLogin = function(userData) {
-        const { first_name, last_name, email, phone, user_id } = userData;
-        
-        setTimeout(() => {
-            const iframe = document.querySelector('.watermelon-embed-frame');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'login',
-                    payload: {
-                        first_name: first_name,
-                        last_name: last_name,
-                        email: email,
-                        phone: phone,
-                        user_id: user_id,
-                    }
-                }, '*');
-            }
-        }, 2000);
-    };
-
-    // Global logout function (call this after user logs out)
-    window.watermelonLogout = function() {
-        const iframe = document.querySelector('.watermelon-embed-frame');
-        
-        // Post to window
-        window.postMessage({
-            type: 'logout',
-            payload: {}
-        }, '*');
-        
-        // Post to iframe
-        if (iframe && iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-                type: 'logout'
-            }, '*');
-        }
-    };
-})();
 
 // ===================================
 // ANALYTICS PLACEHOLDER
