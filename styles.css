@@ -1512,6 +1512,11 @@ section {
         font-size: 1.125rem;
     }
     
+    /* Speed up carousel on mobile */
+    .carousel-track {
+        animation: scroll 20s linear infinite;
+    }
+    
     section {
         padding: clamp(3rem, 8vw, 6rem) 0;
     }

@@ -108,14 +108,26 @@ if (contactForm) {
     contactForm.addEventListener('submit', async e => {
         e.preventDefault();
 
+        // Get form field values correctly
+        const nameField = document.getElementById('name');
+        const emailField = document.getElementById('email');
+        const messageField = document.getElementById('message');
+
         const data = {
-            name: name.value,
-            email: email.value,
-            message: message.value
+            name: nameField.value.trim(),
+            email: emailField.value.trim(),
+            message: messageField.value.trim()
         };
 
+        // Validate fields
         if (!data.name || !data.email || !data.message) {
-            return showFormStatus('Please fill all fields.', 'error');
+            return showFormStatus('Please fill in all fields.', 'error');
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            return showFormStatus('Please enter a valid email address.', 'error');
         }
 
         const btn = contactForm.querySelector('button');
