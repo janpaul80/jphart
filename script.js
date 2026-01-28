@@ -133,19 +133,7 @@ window.addEventListener('scroll', () => {
 // PRICING TOGGLE (MONTHLY/ANNUAL)
 // ===================================
 
-const pricingToggle = document.getElementById('pricingToggle');
-if (pricingToggle) {
-    pricingToggle.addEventListener('change', (e) => {
-        const isAnnual = e.target.checked;
-        const priceAmounts = document.querySelectorAll('.price-amount');
-        
-        priceAmounts.forEach(amount => {
-            const monthly = amount.dataset.monthly;
-            const annual = amount.dataset.annual;
-            amount.textContent = isAnnual ? annual : monthly;
-        });
-    });
-}
+// Pricing toggle removed - now using fixed one-time pricing
 
 // ===================================
 // TECH CAROUSEL PAUSE
