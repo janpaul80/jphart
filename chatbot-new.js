@@ -1,5 +1,6 @@
 // ===================================
 // HARTMANN AI WIDGET - MAIN SCRIPT
+// GitHub Pages Compatible (No Backend Required)
 // ===================================
 
 class HartmannAI {
@@ -97,16 +98,59 @@ class HartmannAI {
         // Show typing indicator
         this.showTyping();
         
-        // Get AI response
-        try {
-            const response = await this.getAIResponse(message);
+        // Get smart response (no backend needed)
+        setTimeout(() => {
             this.hideTyping();
+            const response = this.getSmartResponse(message);
             this.addMessage(response, 'bot');
-        } catch (error) {
-            this.hideTyping();
-            this.addMessage('Sorry, I encountered an error. Please try again or contact us directly via WhatsApp or Email.', 'bot');
-            console.error('AI Error:', error);
+        }, 1000);
+    }
+    
+    getSmartResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Pricing questions
+        if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('pricing') || lowerMessage.includes('how much')) {
+            return "I offer three packages:\n\n💡 Starter ($149) - Perfect for landing pages and simple websites\n🚀 Builder ($299) - For startups needing real functionality with frontend + backend\n⚡ Scale ($499) - Production-ready builds with AI integration\n\nFor detailed information, please contact me via WhatsApp or Email!";
         }
+        
+        // Services questions
+        if (lowerMessage.includes('service') || lowerMessage.includes('what do you do') || lowerMessage.includes('what can you') || lowerMessage.includes('help with')) {
+            return "I'm a full-stack developer specializing in:\n\n• Web Applications (React, Next.js)\n• Mobile Apps (React Native, Flutter)\n• Backend & APIs\n• AI Integration\n• Deployment & Scaling\n\nLet's discuss your project! Contact me via WhatsApp (+593 98 9704265) or Email.";
+        }
+        
+        // Contact/hire questions
+        if (lowerMessage.includes('hire') || lowerMessage.includes('contact') || lowerMessage.includes('reach') || lowerMessage.includes('talk') || lowerMessage.includes('email') || lowerMessage.includes('whatsapp')) {
+            return "I'd love to discuss your project! You can reach me:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@jphart.dev\n\nClick the buttons below to connect directly!";
+        }
+        
+        // Portfolio questions
+        if (lowerMessage.includes('portfolio') || lowerMessage.includes('work') || lowerMessage.includes('project') || lowerMessage.includes('example') || lowerMessage.includes('built')) {
+            return "I've built projects like HeftCoder, NextCoder, Vidhart, and more. Check out my portfolio on the website! For specific project discussions, let's connect via WhatsApp or Email.";
+        }
+        
+        // Timeline questions
+        if (lowerMessage.includes('how long') || lowerMessage.includes('timeline') || lowerMessage.includes('when') || lowerMessage.includes('delivery') || lowerMessage.includes('time')) {
+            return "Project timelines vary based on complexity:\n\n• Starter projects: 1-2 weeks\n• Builder projects: 2-4 weeks\n• Scale projects: 4-8 weeks\n\nLet's discuss your specific needs via WhatsApp or Email for an accurate timeline!";
+        }
+        
+        // Technology questions
+        if (lowerMessage.includes('tech') || lowerMessage.includes('stack') || lowerMessage.includes('language') || lowerMessage.includes('framework') || lowerMessage.includes('use')) {
+            return "I work with modern technologies:\n\n• Frontend: React, Next.js, TypeScript, Tailwind\n• Backend: Node.js, Python, PostgreSQL\n• Mobile: React Native, Flutter\n• AI: OpenAI, Gemini, custom integrations\n\nWhat's your project about? Let's chat via WhatsApp!";
+        }
+        
+        // Greeting
+        if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey') || lowerMessage.includes('good')) {
+            return "Hello! 👋 I'm Paul Hartmann, a full-stack developer. I can help you with web apps, mobile apps, and AI-powered solutions. What are you looking to build?";
+        }
+        
+        // Thanks
+        if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
+            return "You're welcome! Feel free to reach out via WhatsApp or Email anytime. I'm here to help! 😊";
+        }
+        
+        // Default response
+        return "Thanks for your message! For detailed discussions about your project, I'd recommend connecting directly:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@jphart.dev\n\nI typically respond within a few hours!";
     }
     
     addMessage(text, sender) {
@@ -122,6 +166,7 @@ class HartmannAI {
         
         const p = document.createElement('p');
         p.textContent = text;
+        p.style.whiteSpace = 'pre-line'; // Preserve line breaks
         
         bubble.appendChild(p);
         messageDiv.appendChild(avatar);
@@ -144,27 +189,6 @@ class HartmannAI {
     
     hideTyping() {
         this.chatTyping.style.display = 'none';
-    }
-    
-    async getAIResponse(userMessage) {
-        // Call your API endpoint
-        const response = await fetch('/api/chat-ai', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: userMessage,
-                history: this.conversationHistory
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('API request failed');
-        }
-        
-        const data = await response.json();
-        return data.response;
     }
 }
 
