@@ -511,13 +511,13 @@
 
     /* Floating chat on small phones instead of full-screen */
     .pa-window {
-        position: absolute;
+        position: fixed;
         top: auto;
-        left: auto;
-        right: 0;
-        bottom: 68px;
-        width: calc(100vw - 24px);
-        max-width: 100%;
+        left: 12px;
+        right: 12px;
+        bottom: 80px;
+        width: auto;
+        max-width: none;
         height: 70vh;
         max-height: 500px;
         border-radius: 16px;
