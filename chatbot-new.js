@@ -84,11 +84,11 @@ class PaulAssistant {
                     aiMsg = aiMsg.replace('[WHATSAPP_REDIRECT]', '').trim();
                     this.addMessage(aiMsg, 'bot');
                     
-                    // Show a status update
+                    // Show a status update with a fallback link
                     setTimeout(() => {
-                        this.addMessage("Redirecting you to WhatsApp...", 'bot');
+                        this.addMessage("Redirecting you to WhatsApp... <br><br><a href='https://wa.me/436706034585?text=Hi%20Paul,%20I%20was%20just%20chatting%20with%20your%20assistant%20about%20a%20project...'>Click here if it doesn't open automatically</a>", 'bot');
                         setTimeout(() => {
-                            window.open('https://wa.me/436706034585', '_blank');
+                            window.location.href = 'https://wa.me/436706034585?text=Hi%20Paul,%20I%20was%20just%20chatting%20with%20your%20assistant%20about%20a%20project...';
                         }, 1000);
                     }, 500);
                 } else {
@@ -108,17 +108,6 @@ class PaulAssistant {
     }
 
     addMessage(text, sender) {
-        // Handle WhatsApp redirection if token present
-        if (sender === 'bot' && text.includes('[WHATSAPP_REDIRECT]')) {
-            const cleanText = text.replace('[WHATSAPP_REDIRECT]', '').trim();
-            if (cleanText) this.renderMessage(cleanText, sender);
-            
-            setTimeout(() => {
-                window.open('https://wa.me/436706034585?text=Hi Paul, I was just chatting with your assistant about a project...', '_blank');
-            }, 1500);
-            return;
-        }
-
         this.renderMessage(text, sender);
 
         // Store history (skip the initial welcome if it's the very first message)
