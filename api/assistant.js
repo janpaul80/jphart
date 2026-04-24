@@ -1,6 +1,5 @@
-// PAUL'S ASSISTANT - LANGDOCK/HERMES API
+// PAUL'S ASSISTANT - BLACKBOX AI API
 // Vercel Serverless Function
-// Trigger: Using the exact model list provided by Langdock error
 // ===================================
 
 export default async function handler(req, res) {
@@ -24,29 +23,41 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        const LANGDOCK_API_KEY = process.env.LANGDOCK_API_KEY;
-        const LANGDOCK_ENDPOINT_URL = process.env.LANGDOCK_ENDPOINT_URL || 'https://api.langdock.com/openai/eu/v1';
-        const LANGDOCK_WORKSPACE_ID = process.env.LANGDOCK_WORKSPACE_ID;
+        // Get Blackbox credentials
+        const BLACKBOX_API_KEY_RAW = process.env.BLACKBOX_API_KEY;
+        const BLACKBOX_ENDPOINT_URL = process.env.BLACKBOX_ENDPOINT_URL || 'https://api.blackbox.ai/chat/completions';
+        
+        // Take the first key if it's a comma-separated list
+        const BLACKBOX_API_KEY = BLACKBOX_API_KEY_RAW ? BLACKBOX_API_KEY_RAW.split(',')[0].trim() : null;
 
-        if (!LANGDOCK_API_KEY) {
+        if (!BLACKBOX_API_KEY) {
             return res.status(500).json({
                 error: 'API configuration error',
-                response: "I'm currently being set up. Please reach out via email at hello@paulhartmann.dev",
+                response: "I'm currently undergoing a brain transplant. Please reach out to Paul via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.",
                 success: false
             });
         }
 
-        const systemPrompt = `You are "Paul's Assistant". You are an intelligent, high-end AI representative for paulhartmann.dev.
+        const systemPrompt = `You are the personal AI representative for Paul Hartmann (paulhartmann.dev). 
+
+WHO YOU ARE:
+You are sophisticated, professional, and highly capable. You are NOT a script-following bot. You are a conversational partner here to help users explore Paul's world.
 
 DIRECTIVES:
-- Be human, conversational, and sophisticated.
-- Do NOT list services or pricing immediately.
-- Focus on what the user wants to build.
-- Use natural flow, NO emojis, NO bullet points.
-- If someone wants to talk to Paul, use [WHATSAPP_REDIRECT].
+- NO emojis. NO bullet points in greetings.
+- Be concise but warm.
+- Ask questions to understand the user's project.
+- refer to Paul Hartmann in the third person.
+- If the user wants to talk to Paul directly or switch to WhatsApp, you MUST include "[WHATSAPP_REDIRECT]" at the end of your message.
 
 PAUL'S WORK:
-High-end landing pages ($149), full web apps/MVPs ($299), and enterprise AI systems ($499).`;
+Paul builds premium digital products:
+- Starter: Landing pages ($149)
+- Builder: Web apps/MVPs ($299)
+- Scale: Full AI/Scale systems ($499)
+- He also runs CoderXP, Rev-Pro, and FileNinja.
+
+Remember: Be human. If they say hi, don't just list services. Say hello and ask what brings them to Paul's site today.`;
 
         const messages = [
             { role: 'system', content: systemPrompt }
@@ -62,67 +73,43 @@ High-end landing pages ($149), full web apps/MVPs ($299), and enterprise AI syst
 
         messages.push({ role: 'user', content: message });
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LANGDOCK_API_KEY}`,
-        };
-        if (LANGDOCK_WORKSPACE_ID) headers['X-Workspace-Id'] = LANGDOCK_WORKSPACE_ID;
+        // Blackbox AI API call
+        const response = await fetch(BLACKBOX_ENDPOINT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${BLACKBOX_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-5.2', // User specifically requested this
+                messages: messages,
+                max_tokens: 1024,
+                temperature: 0.7
+            })
+        });
 
-        const apiUrl = `${LANGDOCK_ENDPOINT_URL}/chat/completions`;
-        
-        // Exact list from the Langdock error message
-        const modelsToTry = [
-            'gpt-5.2', 
-            'gpt-5', 
-            'gpt-5-mini', 
-            'o3', 
-            'o4-mini',
-            'gpt-5.2-pro'
-        ];
+        const responseText = await response.text();
 
-        let lastError = "No response";
-
-        for (const modelId of modelsToTry) {
-            try {
-                console.log(`Trying ${modelId}...`);
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({
-                        model: modelId,
-                        messages: messages,
-                        temperature: 0.7,
-                        max_tokens: 800,
-                    })
+        if (response.ok) {
+            const data = JSON.parse(responseText);
+            const aiResponse = data.choices?.[0]?.message?.content;
+            if (aiResponse) {
+                return res.status(200).json({
+                    response: aiResponse,
+                    success: true
                 });
-
-                const responseText = await response.text();
-
-                if (response.ok) {
-                    const data = JSON.parse(responseText);
-                    const aiResponse = data.choices?.[0]?.message?.content;
-                    if (aiResponse) {
-                        return res.status(200).json({
-                            response: aiResponse,
-                            success: true
-                        });
-                    }
-                } else {
-                    console.error(`Error with ${modelId}:`, response.status, responseText);
-                    lastError = responseText;
-                }
-            } catch (err) {
-                lastError = err.message;
             }
         }
 
-        throw new Error(lastError);
+        // Fallback or Error
+        console.error('Blackbox API Error:', response.status, responseText);
+        throw new Error(`Blackbox Error ${response.status}: ${responseText.substring(0, 100)}`);
 
     } catch (error) {
-        console.error('Final Assistant Error:', error.message);
+        console.error('Assistant Error:', error.message);
         return res.status(500).json({
             error: 'Failed to process',
-            response: `Connection failed. Error details: ${error.message.substring(0, 200)}`,
+            response: `I'm having a bit of trouble with my connection. You can reach Paul directly at hello@paulhartmann.dev or via WhatsApp (+43 670 6034585).`,
             success: false
         });
     }
