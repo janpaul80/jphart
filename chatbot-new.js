@@ -32,7 +32,7 @@ class PaulAssistant {
         });
 
         // Welcome message
-        this.addMessage("Hi there! 👋 I'm Paul's Assistant. I can help you learn about our services, pricing, and projects. What can I help you with?", 'bot');
+        this.addMessage("Hi there! I'm Paul's Assistant. I can help you learn about our services, pricing, and projects. What can I help you with?", 'bot');
     }
 
     toggleWidget() {
