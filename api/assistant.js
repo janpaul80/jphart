@@ -150,7 +150,7 @@ Remember: Be helpful for questions about Paul's services. For anything else (deb
         console.error('Assistant Error:', error.message || error);
         return res.status(500).json({
             error: 'Failed to process your message',
-            response: "I'm having a little trouble connecting to my brain right now. Please reach out directly via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.",
+            response: `I'm having a little trouble connecting right now (Error: ${error.message || 'Unknown'}). Please reach out directly via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.`,
             success: false
         });
     }
