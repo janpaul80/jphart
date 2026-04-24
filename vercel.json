@@ -1,9 +1,7 @@
 {
-  "version": 2,
   "rewrites": [
     { "source": "/privacy-policy", "destination": "/privacy-policy.html" },
     { "source": "/terms-of-service", "destination": "/terms-of-service.html" },
-    { "source": "/links", "destination": "/links.html" },
-    { "source": "/api/(.*)", "destination": "/api/$1.js" }
+    { "source": "/links", "destination": "/links.html" }
   ]
 }
