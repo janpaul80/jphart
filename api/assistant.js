@@ -1,6 +1,6 @@
-// ===================================
 // PAUL'S ASSISTANT - LANGDOCK/HERMES API
 // Vercel Serverless Function
+// Trigger: Settings updated to 'Other' framework
 // ===================================
 
 export default async function handler(req, res) {
