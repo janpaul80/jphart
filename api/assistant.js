@@ -1,6 +1,6 @@
 // PAUL'S ASSISTANT - LANGDOCK/HERMES API
 // Vercel Serverless Function
-// Trigger: Upgraded to GPT-5.2 for better reasoning
+// Trigger: Using the exact model list provided by Langdock error
 // ===================================
 
 export default async function handler(req, res) {
@@ -29,7 +29,6 @@ export default async function handler(req, res) {
         const LANGDOCK_WORKSPACE_ID = process.env.LANGDOCK_WORKSPACE_ID;
 
         if (!LANGDOCK_API_KEY) {
-            console.error('LANGDOCK_API_KEY not found');
             return res.status(500).json({
                 error: 'API configuration error',
                 response: "I'm currently being set up. Please reach out via email at hello@paulhartmann.dev",
@@ -37,39 +36,29 @@ export default async function handler(req, res) {
             });
         }
 
-        const systemPrompt = `You are the AI Assistant for Paul Hartmann (paulhartmann.dev). You are a high-end, premium representative.
+        const systemPrompt = `You are "Paul's Assistant". You are an intelligent, high-end AI representative for paulhartmann.dev.
 
-CORE DIRECTIVE:
-Be fluid, human, and sophisticated. Do NOT use bullet points unless necessary. Do NOT dump pricing unless specifically asked. Focus on the user's project first.
+DIRECTIVES:
+- Be human, conversational, and sophisticated.
+- Do NOT list services or pricing immediately.
+- Focus on what the user wants to build.
+- Use natural flow, NO emojis, NO bullet points.
+- If someone wants to talk to Paul, use [WHATSAPP_REDIRECT].
 
-PERSONALITY:
-- Premium and professional.
-- refer to Paul Hartmann in the third person.
-- NO emojis.
-- If the user says "Hi", reply with a warm, professional greeting and ask about their goals.
+PAUL'S WORK:
+High-end landing pages ($149), full web apps/MVPs ($299), and enterprise AI systems ($499).`;
 
-KNOWLEDGE:
-Paul builds premium landing pages ($149), web apps ($299), and AI-integrated systems ($499).
-He also runs CoderXP, Rev-Pro, and FileNinja.
-
-ACTIONS:
-- LEAD GEN: Ask for name/email naturally when interest is shown.
-- DIRECT CONTACT: Append "[WHATSAPP_REDIRECT]" if they want to speak with Paul directly.
-
-Important: Maintain the flow of conversation. Reference previous parts of the chat if helpful.`;
-
-        // Build messages array
         const messages = [
             { role: 'system', content: systemPrompt }
         ];
 
-        // Ensure history is correctly formatted and not too long
-        const cleanHistory = Array.isArray(history) ? history.slice(-10) : [];
-        cleanHistory.forEach(msg => {
-            if (msg.role && msg.content) {
-                messages.push({ role: msg.role, content: msg.content });
-            }
-        });
+        if (Array.isArray(history)) {
+            history.slice(-10).forEach(msg => {
+                if (msg.role && msg.content) {
+                    messages.push({ role: msg.role, content: msg.content });
+                }
+            });
+        }
 
         messages.push({ role: 'user', content: message });
 
@@ -81,13 +70,21 @@ Important: Maintain the flow of conversation. Reference previous parts of the ch
 
         const apiUrl = `${LANGDOCK_ENDPOINT_URL}/chat/completions`;
         
-        // Priority models: gpt-5.2 (User requested), gpt-5, gpt-5-mini
-        const modelsToTry = ['gpt-5.2', 'gpt-5', 'gpt-5-mini', 'o3'];
-        let lastError = "No response from AI service";
+        // Exact list from the Langdock error message
+        const modelsToTry = [
+            'gpt-5.2', 
+            'gpt-5', 
+            'gpt-5-mini', 
+            'o3', 
+            'o4-mini',
+            'gpt-5.2-pro'
+        ];
+
+        let lastError = "No response";
 
         for (const modelId of modelsToTry) {
             try {
-                console.log(`Calling Langdock with model: ${modelId}`);
+                console.log(`Trying ${modelId}...`);
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: headers,
@@ -95,32 +92,26 @@ Important: Maintain the flow of conversation. Reference previous parts of the ch
                         model: modelId,
                         messages: messages,
                         temperature: 0.7,
-                        max_tokens: 1000,
+                        max_tokens: 800,
                     })
                 });
 
                 const responseText = await response.text();
 
                 if (response.ok) {
-                    try {
-                        const data = JSON.parse(responseText);
-                        const aiResponse = data.choices?.[0]?.message?.content;
-                        if (aiResponse) {
-                            return res.status(200).json({
-                                response: aiResponse,
-                                success: true
-                            });
-                        }
-                    } catch (e) {
-                        console.error('JSON Parse Error:', e);
-                        lastError = `Malformed JSON: ${responseText.substring(0, 50)}`;
+                    const data = JSON.parse(responseText);
+                    const aiResponse = data.choices?.[0]?.message?.content;
+                    if (aiResponse) {
+                        return res.status(200).json({
+                            response: aiResponse,
+                            success: true
+                        });
                     }
                 } else {
-                    console.error(`Langdock Error (${modelId}):`, response.status, responseText);
-                    lastError = `Status ${response.status}: ${responseText.substring(0, 100)}`;
+                    console.error(`Error with ${modelId}:`, response.status, responseText);
+                    lastError = responseText;
                 }
             } catch (err) {
-                console.error(`Fetch error for ${modelId}:`, err);
                 lastError = err.message;
             }
         }
@@ -128,10 +119,10 @@ Important: Maintain the flow of conversation. Reference previous parts of the ch
         throw new Error(lastError);
 
     } catch (error) {
-        console.error('Assistant Error:', error.message || error);
+        console.error('Final Assistant Error:', error.message);
         return res.status(500).json({
-            error: 'Failed to process your message',
-            response: `I'm having a little trouble connecting right now (Error: ${error.message || 'Service Unavailable'}). Please reach out directly via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.`,
+            error: 'Failed to process',
+            response: `Connection failed. Error details: ${error.message.substring(0, 200)}`,
             success: false
         });
     }
