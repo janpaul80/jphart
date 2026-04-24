@@ -29,10 +29,10 @@ export default async function handler(req, res) {
         const LANGDOCK_WORKSPACE_ID = process.env.LANGDOCK_WORKSPACE_ID;
 
         if (!LANGDOCK_API_KEY) {
-            console.error('LANGDOCK_API_KEY not found in environment variables');
+            console.error('LANGDOCK_API_KEY not found');
             return res.status(500).json({
                 error: 'API configuration error',
-                response: "I'm currently being set up. Please reach out to us directly via email at hello@paulhartmann.dev",
+                response: "I'm currently being set up. Please reach out via email at hello@paulhartmann.dev",
                 success: false
             });
         }
@@ -83,22 +83,17 @@ Then confirm you'll pass their info to Paul and he'll get back to them shortly. 
 
 Remember: Be helpful for questions about Paul's services. For anything else (debugging, how-to, etc.), kindly redirect to lead collection. If they want direct contact, use [WHATSAPP_REDIRECT].`;
 
-        // Build messages array (OpenAI format)
+        // Build messages array
         const messages = [
             { role: 'system', content: systemPrompt }
         ];
 
-        // Add conversation history
         history.forEach(msg => {
             if (msg.role === 'user' || msg.role === 'assistant') {
-                messages.push({
-                    role: msg.role,
-                    content: msg.content
-                });
+                messages.push({ role: msg.role, content: msg.content });
             }
         });
 
-        // Add current message
         messages.push({ role: 'user', content: message });
 
         // Build headers
@@ -106,73 +101,56 @@ Remember: Be helpful for questions about Paul's services. For anything else (deb
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LANGDOCK_API_KEY}`,
         };
-
-        // Add workspace ID if available
-        if (LANGDOCK_WORKSPACE_ID) {
-            headers['X-Workspace-Id'] = LANGDOCK_WORKSPACE_ID;
-        }
+        if (LANGDOCK_WORKSPACE_ID) headers['X-Workspace-Id'] = LANGDOCK_WORKSPACE_ID;
 
         const apiUrl = `${LANGDOCK_ENDPOINT_URL}/chat/completions`;
-        console.log('Calling Langdock API:', apiUrl);
+        
+        // Try models in order of preference
+        // We'll try 'hermes' first (just in case), then 'gpt-5-mini' (verified available), then 'gpt-5'
+        const modelsToTry = ['hermes', 'gpt-5-mini', 'gpt-5'];
+        let lastError = null;
 
-        // Call Langdock API (OpenAI-compatible)
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                messages: messages,
-                temperature: 0.7,
-                max_tokens: 512,
-            })
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Langdock API Error:', response.status, response.statusText, errorText);
-
-            // If model not found, try fallback models
-            if (response.status === 404 || response.status === 400) {
-                console.log('Trying fallback model gpt-4o-mini...');
-                const fallbackResponse = await fetch(apiUrl, {
+        for (const modelId of modelsToTry) {
+            try {
+                console.log(`Trying model: ${modelId}`);
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify({
-                        model: 'gpt-4o-mini',
+                        model: modelId,
                         messages: messages,
                         temperature: 0.7,
                         max_tokens: 512,
                     })
                 });
 
-                if (fallbackResponse.ok) {
-                    const fallbackData = await fallbackResponse.json();
-                    const aiResponse = fallbackData.choices?.[0]?.message?.content ||
-                        "I couldn't generate a response. Please contact us at hello@paulhartmann.dev";
-                    return res.status(200).json({ response: aiResponse, success: true });
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiResponse = data.choices?.[0]?.message?.content;
+                    if (aiResponse) {
+                        return res.status(200).json({
+                            response: aiResponse,
+                            success: true
+                        });
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error(`Langdock Error (${modelId}):`, response.status, errorText);
+                    lastError = errorText;
                 }
-
-                const fallbackError = await fallbackResponse.text();
-                console.error('Fallback also failed:', fallbackResponse.status, fallbackError);
+            } catch (err) {
+                console.error(`Fetch error for ${modelId}:`, err);
+                lastError = err.message;
             }
-
-            throw new Error(`Langdock API error: ${response.status} - ${errorText}`);
         }
 
-        const data = await response.json();
-        const aiResponse = data.choices?.[0]?.message?.content ||
-            "I apologize, but I couldn't generate a response. Please contact us at hello@paulhartmann.dev";
-
-        return res.status(200).json({
-            response: aiResponse,
-            success: true
-        });
+        throw new Error(`All models failed. Last error: ${lastError}`);
 
     } catch (error) {
         console.error('Assistant Error:', error.message || error);
         return res.status(500).json({
             error: 'Failed to process your message',
-            response: "I'm having a little trouble right now. Please reach out directly via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.",
+            response: "I'm having a little trouble connecting to my brain right now. Please reach out directly via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.",
             success: false
         });
     }
