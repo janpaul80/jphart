@@ -23,8 +23,8 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'API configuration error' });
         }
         
-        // System context about Paul Hartmann / JP Hart
-        const systemContext = `You are an AI assistant for Paul Hartmann (JP Hart), a full-stack software developer and studio owner.
+        // System context about Paul Hartmann / Paul Hartmann
+        const systemContext = `You are an AI assistant for Paul Hartmann (Paul Hartmann), a full-stack software developer and studio owner.
 
 ABOUT PAUL:
 - Full-stack software engineer with 8+ years of experience
