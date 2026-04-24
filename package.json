@@ -1,7 +1,7 @@
 {
   "name": "jphart-portfolio",
   "version": "1.0.0",
-  "description": "Professional portfolio website for jphart.dev",
+  "description": "Professional portfolio website for paulhartmann.dev",
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",

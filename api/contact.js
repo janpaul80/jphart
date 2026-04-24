@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             port: 465,
             secure: true, // use SSL
             auth: {
-                user: process.env.EMAIL_USER, // jp@jphart.dev
+                user: process.env.EMAIL_USER, // jp@paulhartmann.dev
                 pass: process.env.EMAIL_PASSWORD // Ecuagrowers10@@
             }
         });

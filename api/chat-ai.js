@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
 ABOUT PAUL:
 - Full-stack software engineer with 8+ years of experience
-- Based in Netherlands, available worldwide
+- Based in Europe, available worldwide
 - Specializes in web apps, mobile development, SaaS platforms, and scalable backend systems
 - Works with React, Next.js, Node.js, TypeScript, and modern tech stacks
 - Builds products that are meant to last, not just ship
@@ -72,9 +72,9 @@ PRICING PACKAGES:
    - Best for: Serious founders, Growing products, Teams ready to scale
 
 CONTACT:
-- Website: https://jphart.dev
+- Website: https://paulhartmann.dev
 - WhatsApp: +593 98 9704265
-- Email: contact@jphart.dev
+- Email: contact@paulhartmann.dev
 - GitHub: https://github.com/janpaul80
 
 RELATED PRODUCT:
@@ -169,7 +169,7 @@ Be helpful, professional, and concise. Answer questions about Paul's services, p
         console.error('Chat AI Error:', error);
         return res.status(500).json({
             error: 'Failed to process your message',
-            response: 'I apologize for the inconvenience. Please contact us directly via WhatsApp (+593 98 9704265) or email (contact@jphart.dev).',
+            response: 'I apologize for the inconvenience. Please contact us directly via WhatsApp (+593 98 9704265) or email (contact@paulhartmann.dev).',
             success: false
         });
     }

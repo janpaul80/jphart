@@ -121,7 +121,7 @@ class HartmannAI {
         
         // Contact/hire questions
         if (lowerMessage.includes('hire') || lowerMessage.includes('contact') || lowerMessage.includes('reach') || lowerMessage.includes('talk') || lowerMessage.includes('email') || lowerMessage.includes('whatsapp')) {
-            return "I'd love to discuss your project! You can reach me:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@jphart.dev\n\nClick the buttons below to connect directly!";
+            return "I'd love to discuss your project! You can reach me:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@paulhartmann.dev\n\nClick the buttons below to connect directly!";
         }
         
         // Portfolio questions
@@ -150,7 +150,7 @@ class HartmannAI {
         }
         
         // Default response
-        return "Thanks for your message! For detailed discussions about your project, I'd recommend connecting directly:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@jphart.dev\n\nI typically respond within a few hours!";
+        return "Thanks for your message! For detailed discussions about your project, I'd recommend connecting directly:\n\n📱 WhatsApp: +593 98 9704265\n📧 Email: contact@paulhartmann.dev\n\nI typically respond within a few hours!";
     }
     
     addMessage(text, sender) {
