@@ -108,6 +108,26 @@ class PaulAssistant {
     }
 
     addMessage(text, sender) {
+        // Handle WhatsApp redirection if token present
+        if (sender === 'bot' && text.includes('[WHATSAPP_REDIRECT]')) {
+            const cleanText = text.replace('[WHATSAPP_REDIRECT]', '').trim();
+            if (cleanText) this.renderMessage(cleanText, sender);
+            
+            setTimeout(() => {
+                window.open('https://wa.me/436706034585?text=Hi Paul, I was just chatting with your assistant about a project...', '_blank');
+            }, 1500);
+            return;
+        }
+
+        this.renderMessage(text, sender);
+
+        // Store history (skip the initial welcome if it's the very first message)
+        if (this.history.length > 0 || sender === 'user') {
+            this.history.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
+        }
+    }
+
+    renderMessage(text, sender) {
         const msg = document.createElement('div');
         msg.className = `pa-msg pa-msg-${sender}`;
 
@@ -128,11 +148,6 @@ class PaulAssistant {
 
         this.messages.appendChild(msg);
         this.messages.scrollTop = this.messages.scrollHeight;
-
-        // Store history (skip the initial welcome)
-        if (this.history.length > 0 || sender === 'user') {
-            this.history.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
-        }
     }
 
     linkify(text) {

@@ -3,113 +3,90 @@
 // ===================================
 
 export default async function handler(req, res) {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     try {
         const { message, history = [] } = req.body;
+        if (!message) return res.status(400).json({ error: 'Message is required' });
 
-        if (!message) {
-            return res.status(400).json({ error: 'Message is required' });
-        }
-
-        // Get Blackbox credentials
         const BLACKBOX_API_KEY_RAW = process.env.BLACKBOX_API_KEY;
         const BLACKBOX_ENDPOINT_URL = process.env.BLACKBOX_ENDPOINT_URL || 'https://api.blackbox.ai/chat/completions';
-        
-        // Take the first key if it's a comma-separated list
         const BLACKBOX_API_KEY = BLACKBOX_API_KEY_RAW ? BLACKBOX_API_KEY_RAW.split(',')[0].trim() : null;
 
         if (!BLACKBOX_API_KEY) {
             return res.status(500).json({
-                error: 'API configuration error',
-                response: "I'm currently undergoing a brain transplant. Please reach out to Paul via WhatsApp (+43 670 6034585) or email hello@paulhartmann.dev.",
+                error: 'Missing API Key',
+                response: "I'm currently being updated. Please reach out to Paul via WhatsApp (+43 670 6034585).",
                 success: false
             });
         }
 
-        const systemPrompt = `You are the personal AI representative for Paul Hartmann (paulhartmann.dev). 
-
-WHO YOU ARE:
-You are sophisticated, professional, and highly capable. You are NOT a script-following bot. You are a conversational partner here to help users explore Paul's world.
-
+        const systemPrompt = `You are the personal AI Assistant for Paul Hartmann (paulhartmann.dev).
+        
 DIRECTIVES:
-- NO emojis. NO bullet points in greetings.
-- Be concise but warm.
-- Ask questions to understand the user's project.
-- refer to Paul Hartmann in the third person.
-- If the user wants to talk to Paul directly or switch to WhatsApp, you MUST include "[WHATSAPP_REDIRECT]" at the end of your message.
+- Sophisticated, professional, human.
+- NO emojis. NO lists at the start.
+- refer to Paul Hartmann in third person.
+- If they want to talk to Paul directly, append [WHATSAPP_REDIRECT].
 
-PAUL'S WORK:
-Paul builds premium digital products:
-- Starter: Landing pages ($149)
-- Builder: Web apps/MVPs ($299)
-- Scale: Full AI/Scale systems ($499)
-- He also runs CoderXP, Rev-Pro, and FileNinja.
+PAUL'S PRICING:
+- Starter ($149): Landing pages.
+- Builder ($299): Web apps.
+- Scale ($499): AI & Production.`;
 
-Remember: Be human. If they say hi, don't just list services. Say hello and ask what brings them to Paul's site today.`;
-
-        const messages = [
-            { role: 'system', content: systemPrompt }
-        ];
-
+        const messages = [{ role: 'system', content: systemPrompt }];
         if (Array.isArray(history)) {
             history.slice(-10).forEach(msg => {
-                if (msg.role && msg.content) {
-                    messages.push({ role: msg.role, content: msg.content });
-                }
+                if (msg.role && msg.content) messages.push({ role: msg.role, content: msg.content });
             });
         }
-
         messages.push({ role: 'user', content: message });
 
-        // Blackbox AI API call
-        const response = await fetch(BLACKBOX_ENDPOINT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${BLACKBOX_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-5.2', // User specifically requested this
-                messages: messages,
-                max_tokens: 1024,
-                temperature: 0.7
-            })
-        });
+        // Try Blackbox AI with multiple model candidates
+        const models = ['blackboxai/google/gemini-3.1-pro-preview', 'blackboxai/anthropic/claude-sonnet-4.6', 'blackboxai/blackbox-pro'];
+        let lastError = "Connection failed";
 
-        const responseText = await response.text();
-
-        if (response.ok) {
-            const data = JSON.parse(responseText);
-            const aiResponse = data.choices?.[0]?.message?.content;
-            if (aiResponse) {
-                return res.status(200).json({
-                    response: aiResponse,
-                    success: true
+        for (const modelId of models) {
+            try {
+                console.log(`Trying Blackbox model: ${modelId}`);
+                const response = await fetch(BLACKBOX_ENDPOINT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${BLACKBOX_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: modelId,
+                        messages: messages,
+                        max_tokens: 1024
+                    })
                 });
+
+                const text = await response.text();
+                if (response.ok) {
+                    const data = JSON.parse(text);
+                    const aiResponse = data.choices?.[0]?.message?.content;
+                    if (aiResponse) return res.status(200).json({ response: aiResponse, success: true });
+                } else {
+                    lastError = `Status ${response.status}: ${text.substring(0, 50)}`;
+                }
+            } catch (e) {
+                lastError = e.message;
             }
         }
 
-        // Fallback or Error
-        console.error('Blackbox API Error:', response.status, responseText);
-        throw new Error(`Blackbox Error ${response.status}: ${responseText.substring(0, 100)}`);
+        throw new Error(lastError);
 
     } catch (error) {
         console.error('Assistant Error:', error.message);
         return res.status(500).json({
             error: 'Failed to process',
-            response: `I'm having a bit of trouble with my connection. You can reach Paul directly at hello@paulhartmann.dev or via WhatsApp (+43 670 6034585).`,
+            response: `I'm having a little trouble connecting right now (Error: ${error.message}). Please reach out directly to Paul at hello@paulhartmann.dev or via WhatsApp (+43 670 6034585).`,
             success: false
         });
     }

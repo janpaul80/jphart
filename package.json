@@ -17,6 +17,7 @@
   "author": "Paul Hartmann",
   "license": "MIT",
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "nodemailer": "^6.9.7"
   },
   "engines": {
