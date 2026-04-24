@@ -998,12 +998,66 @@
 
     <script src="script.js"></script>
     
-    <!-- Watermelon AI AI Agent Widget -->
-    <script async
-        type="module"
-        src="https://chatwidget-prod.web.app/embed/init.iife.js"
-        data-watermelon-widget-id="Ax1ylVTnljx"
-        data-watermelon-settings-id="16180"></script>
+    <!-- Paul's Assistant Widget -->
+    <link rel="stylesheet" href="chatbot-new.css">
+    
+    <div class="paul-assistant">
+        <button class="pa-toggle" id="paToggle" aria-label="Open Paul's Assistant">
+            <svg class="pa-toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <svg class="pa-toggle-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="pa-window" id="paWindow">
+            <div class="pa-header">
+                <div class="pa-header-avatar">PH</div>
+                <div class="pa-header-info">
+                    <h3 class="pa-header-name">Paul's Assistant</h3>
+                    <p class="pa-header-status"><span class="pa-status-dot"></span> Online</p>
+                </div>
+            </div>
+
+            <div class="pa-messages" id="paMessages">
+                <div class="pa-typing" id="paTyping">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <div class="pa-input-area">
+                <form class="pa-form" id="paForm">
+                    <input type="text" class="pa-input" id="paInput" placeholder="Ask me anything..." autocomplete="off" required>
+                    <button type="submit" class="pa-send" id="paSend" aria-label="Send">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <div class="pa-powered">Powered by Hermes AI</div>
+        </div>
+    </div>
+
+    <!-- Cookie Consent -->
+    <div class="cookie-consent" id="cookieConsent">
+        <div class="cookie-inner">
+            <div class="cookie-card">
+                <div class="cookie-text">
+                    <p class="cookie-title">🍪 Cookie Notice</p>
+                    <p class="cookie-desc">We use cookies to enhance your experience. By continuing, you agree to our <a href="/privacy-policy">Privacy Policy</a>.</p>
+                </div>
+                <div class="cookie-actions">
+                    <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Accept</button>
+                    <button class="cookie-btn cookie-btn-decline" id="cookieDecline">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="chatbot-new.js"></script>
 </body>
 </html>
-
