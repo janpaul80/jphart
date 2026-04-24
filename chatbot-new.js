@@ -77,13 +77,29 @@ class PaulAssistant {
             this.hideTyping();
 
             if (data.success && data.response) {
-                this.addMessage(data.response, 'bot');
+                let aiMsg = data.response;
+                
+                // Check for automatic WhatsApp redirect trigger
+                if (aiMsg.includes('[WHATSAPP_REDIRECT]')) {
+                    aiMsg = aiMsg.replace('[WHATSAPP_REDIRECT]', '').trim();
+                    this.addMessage(aiMsg, 'bot');
+                    
+                    // Show a status update
+                    setTimeout(() => {
+                        this.addMessage("Redirecting you to WhatsApp...", 'bot');
+                        setTimeout(() => {
+                            window.open('https://wa.me/436706034585', '_blank');
+                        }, 1000);
+                    }, 500);
+                } else {
+                    this.addMessage(aiMsg, 'bot');
+                }
             } else {
-                this.addMessage(data.response || "Sorry, I'm having trouble right now. Please try again or reach out via WhatsApp at +593 98 9704265.", 'bot');
+                this.addMessage(data.response || "Sorry, I'm having trouble right now. Please try again or reach out via WhatsApp at +43 670 6034585.", 'bot');
             }
         } catch (error) {
             this.hideTyping();
-            this.addMessage("I'm having connection issues. You can reach Paul directly at contact@paulhartmann.dev or WhatsApp +593 98 9704265.", 'bot');
+            this.addMessage("I'm having connection issues. You can reach Paul directly at hello@paulhartmann.dev or WhatsApp +43 670 6034585.", 'bot');
         }
 
         this.isProcessing = false;
