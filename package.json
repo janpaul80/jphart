@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod",
-    "start": "python -m http.server 8000"
+    "start": "python -m http.server 8000",
+    "check": "node --check site.js && node --check hero-scene.js && node --check api/checkout.js && node --check api/contact.js && node --check api/auth/github.js && node --check api/auth/google.js && node scripts/validate-site.js && node scripts/test-api.js"
   },
   "keywords": [
     "portfolio",

@@ -9,7 +9,7 @@
 ## 📧 Your Email Configuration
 
 **Email:** jp@jphart.dev  
-**Password:** Ecuagrowers10@@  
+**Password:** Use the secure value stored in your deployment environment
 **SMTP Server:** hostingsecure.email  
 **SMTP Port:** 465 (SSL)  
 **IMAP Port:** 993  
@@ -34,7 +34,7 @@ In Vercel Dashboard:
 2. Navigate to "Environment Variables"
 3. Add these variables:
    - `EMAIL_USER` = `jp@jphart.dev`
-   - `EMAIL_PASSWORD` = `Ecuagrowers10@@`
+   - `EMAIL_PASSWORD` = `<your-email-password>`
 
 **Step 3: Deploy**
 ```bash
@@ -68,7 +68,7 @@ In Netlify Dashboard:
 1. Site settings → Environment variables
 2. Add:
    - `EMAIL_USER` = `jp@jphart.dev`
-   - `EMAIL_PASSWORD` = `Ecuagrowers10@@`
+   - `EMAIL_PASSWORD` = `<your-email-password>`
 
 **Step 4: Rename Function**
 Rename `api/contact.js` to `api/contact/contact.js` for Netlify
@@ -102,7 +102,7 @@ To test the email functionality locally:
 **Step 1: Create .env.local file**
 ```bash
 EMAIL_USER=jp@jphart.dev
-EMAIL_PASSWORD=Ecuagrowers10@@
+EMAIL_PASSWORD=your-email-password
 ```
 
 **Step 2: Install Vercel CLI**

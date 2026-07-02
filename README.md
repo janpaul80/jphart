@@ -1,154 +1,29 @@
-# JP Hart Portfolio Website
+# paulhartmann.dev
 
-A modern, professional dark-themed portfolio website for a full-stack software developer and software studio.
+Multi-page portfolio and product studio site for Paul Hartmann. The experience is intentionally framework-free: semantic HTML, a shared token-based CSS system, small vanilla JavaScript interactions, and Vercel serverless functions.
 
-## 🎨 Design Features
+## Routes
 
-- **Dark Theme**: Deep black backgrounds with elegant dark gray sections
-- **Minimal Aesthetic**: Clean, professional design without neon colors or gradients
-- **Smooth Animations**: Subtle fade-ins, slide-ups, and hover transitions
-- **Fully Responsive**: Optimized for desktop, tablet, and mobile devices
+- `/` — cinematic home with a lightweight Three.js identity object
+- `/work` and `/work/*` — portfolio archive and case studies
+- `/about`, `/pricing`, `/contact` — studio information and conversion paths
+- `/login` — GitHub and Google OAuth entry point
+- `/privacy-policy`, `/terms-of-service` — legal pages
 
-## 📋 Sections
-
-1. **Hero Section**: Strong value proposition with clear CTA
-2. **Services**: 5 core offerings (Web Apps, Mobile Apps, Backend & APIs, UI/UX, Deployment)
-3. **Portfolio**: Project showcase with tech stack tags
-4. **Testimonials**: Real client feedback with avatars
-5. **Pricing**: Two-tier package structure (Basic & Pro)
-6. **Tech Carousel**: Animated brand/technology showcase
-7. **Contact Form**: Professional contact form with validation
-
-## 🚀 Getting Started
-
-### Option 1: Open Directly
-Simply open `index.html` in your web browser.
-
-### Option 2: Local Server (Recommended)
-For the best experience, run a local server:
+## Local development
 
 ```bash
-# Using Python 3
-python -m http.server 8000
-
-# Using Node.js (http-server)
-npx http-server
-
-# Using PHP
-php -S localhost:8000
+npm install
+npm run dev
 ```
 
-Then visit `http://localhost:8000` in your browser.
+Copy `.env.example` to `.env.local` and add only the services you intend to test. Never commit secret values.
 
-## 📁 File Structure
+## Production configuration
 
-```
-jp/
-├── index.html          # Main HTML structure
-├── styles.css          # All styling (dark theme)
-├── script.js           # Animations, carousel, form handling
-└── README.md           # This file
-```
+Stripe Checkout needs either `STRIPE_SECRET_KEY` or the three `STRIPE_PAYMENT_LINK_*` values. OAuth needs `AUTH_SECRET` plus the client ID and secret for each provider. Register these exact production callbacks:
 
-## 🎯 Key Features
+- `https://paulhartmann.dev/api/auth/github`
+- `https://paulhartmann.dev/api/auth/google`
 
-### Animations
-- Intersection Observer for scroll-triggered animations
-- Smooth entrance effects for cards and sections
-- Subtle hover transitions
-- Infinite tech carousel
-
-### Contact Form
-- Client-side validation
-- Email format verification
-- Success/error states
-- Ready for backend integration
-
-### Accessibility
-- Semantic HTML5
-- ARIA labels
-- Keyboard navigation support
-- Focus states
-- Reduced motion support
-
-### Performance
-- Optimized animations
-- Lazy loading for images
-- Debounced scroll events
-- Clean, efficient code
-
-## 🛠️ Customization
-
-### Colors
-Edit CSS variables in `styles.css`:
-```css
-:root {
-    --color-bg-primary: #0a0a0a;
-    --color-bg-secondary: #1a1a1a;
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #a0a0a0;
-    /* ... */
-}
-```
-
-### Content
-- Update text in `index.html`
-- Replace project details in the Portfolio section
-- Modify testimonials with real client feedback
-- Update social links in the footer
-
-### Form Integration
-Replace the simulated form submission in `script.js` with your backend API:
-```javascript
-// In contactForm event listener
-await fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-});
-```
-
-## 📱 Responsive Breakpoints
-
-- Desktop: 1200px+
-- Tablet: 768px - 1199px
-- Mobile: < 768px
-
-## 🌐 Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## 📝 To-Do / Future Enhancements
-
-- [ ] Add actual project images/screenshots
-- [ ] Integrate with backend API for contact form
-- [ ] Add Google Analytics or privacy-friendly alternative
-- [ ] Implement blog section (optional)
-- [ ] Add case studies for projects
-- [ ] Set up custom domain DNS
-- [ ] Add meta tags for social sharing (Open Graph, Twitter Cards)
-- [ ] Implement dark/light mode toggle (optional)
-
-## 🔒 Security Notes
-
-When deploying:
-- Implement CSRF protection for forms
-- Add rate limiting to prevent spam
-- Use environment variables for API keys
-- Enable HTTPS
-- Add Content Security Policy headers
-
-## 📄 License
-
-© 2024 jphart.dev. All rights reserved.
-
-## 🤝 Contact
-
-For inquiries, use the contact form on the website or reach out through social media links in the footer.
-
----
-
-Built with ❤️ using vanilla HTML, CSS, and JavaScript.
+Contact delivery uses `EMAIL_USER` and `EMAIL_PASSWORD`; the remaining email variables have safe defaults or are optional.

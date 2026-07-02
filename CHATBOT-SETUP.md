@@ -40,7 +40,7 @@ When deploying to **Vercel**:
 
 ```
 EMAIL_USER=jp@jphart.dev
-EMAIL_PASSWORD=Ecuagrowers10@@
+EMAIL_PASSWORD=your-email-password
 GEMINI_API_KEY=your-gemini-api-key-here
 ```
 

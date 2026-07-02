@@ -60,8 +60,8 @@ Go to your Vercel dashboard: https://vercel.com/dashboard
 
 ```
 EMAIL_USER = jp@jphart.dev
-EMAIL_PASSWORD = Ecuagrowers10@@
-RECAPTCHA_SECRET_KEY = 6LfK51csAAAAAHB9uLFGPwuMRLShLI96yeDjcna4
+EMAIL_PASSWORD = your-email-password
+RECAPTCHA_SECRET_KEY = your-recaptcha-secret-key
 ```
 
 ### Step 5: Redeploy

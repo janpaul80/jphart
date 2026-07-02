@@ -1,97 +1,40 @@
-// Serverless function for Vercel/Netlify
-// This keeps your credentials secure on the server side
-
 const nodemailer = require('nodemailer');
 
-export default async function handler(req, res) {
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+const clean = (value, max) => String(value || '').trim().slice(0, max);
+const escapeHtml = (value) => value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
 
-    const { name, email, message, recaptchaToken } = req.body;
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed.' });
+  const { website } = req.body || {};
+  if (website) return res.status(200).json({ success: true });
 
-    // Validate input
-    if (!name || !email || !message) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
+  const name = clean(req.body?.name, 120);
+  const email = clean(req.body?.email, 200);
+  const company = clean(req.body?.company, 160);
+  const message = clean(req.body?.message, 5000);
+  if (!name || !email || !message) return res.status(400).json({ error: 'Name, email, and project details are required.' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) return res.status(503).json({ error: 'The inquiry form is being configured.' });
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Invalid email address' });
-    }
-
-    // Verify reCAPTCHA
-    if (!recaptchaToken) {
-        return res.status(400).json({ error: 'reCAPTCHA verification required' });
-    }
-
-    try {
-        const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
-        });
-
-        const recaptchaData = await recaptchaResponse.json();
-
-        if (!recaptchaData.success) {
-            return res.status(400).json({ error: 'reCAPTCHA verification failed' });
-        }
-    } catch (error) {
-        console.error('reCAPTCHA verification error:', error);
-        return res.status(500).json({ error: 'reCAPTCHA verification failed' });
-    }
-
-    try {
-        // Create transporter with your email settings
-        const transporter = nodemailer.createTransport({
-            host: 'hostingsecure.email',
-            port: 465,
-            secure: true, // use SSL
-            auth: {
-                user: process.env.EMAIL_USER, // jp@paulhartmann.dev
-                pass: process.env.EMAIL_PASSWORD // Ecuagrowers10@@
-            }
-        });
-
-        // Email content
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER, // Send to yourself
-            replyTo: email, // Allow replying to the sender
-            subject: `New Contact Form Submission from ${name}`,
-            html: `
-                <h2>New Contact Form Submission</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Message:</strong></p>
-                <p>${message.replace(/\n/g, '<br>')}</p>
-            `,
-            text: `
-                New Contact Form Submission
-                
-                Name: ${name}
-                Email: ${email}
-                Message: ${message}
-            `
-        };
-
-        // Send email
-        await transporter.sendMail(mailOptions);
-
-        return res.status(200).json({ 
-            success: true, 
-            message: 'Message sent successfully!' 
-        });
-
-    } catch (error) {
-        console.error('Email error:', error);
-        return res.status(500).json({ 
-            error: 'Failed to send message. Please try again later.' 
-        });
-    }
-}
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST || 'hostingsecure.email',
+      port: Number(process.env.EMAIL_PORT || 465),
+      secure: String(process.env.EMAIL_SECURE || 'true') === 'true',
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD }
+    });
+    const safe = { name: escapeHtml(name), email: escapeHtml(email), company: escapeHtml(company), message: escapeHtml(message).replace(/\n/g, '<br>') };
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.CONTACT_TO || process.env.EMAIL_USER,
+      replyTo: email,
+      subject: `New project inquiry — ${name}`,
+      html: `<h2>New project inquiry</h2><p><strong>Name:</strong> ${safe.name}</p><p><strong>Email:</strong> ${safe.email}</p><p><strong>Company:</strong> ${safe.company || 'Not provided'}</p><p><strong>Project:</strong></p><p>${safe.message}</p>`,
+      text: `New project inquiry\n\nName: ${name}\nEmail: ${email}\nCompany: ${company || 'Not provided'}\n\nProject:\n${message}`
+    });
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Contact delivery failed:', error?.message || error);
+    return res.status(500).json({ error: 'The message could not be delivered right now.' });
+  }
+};
