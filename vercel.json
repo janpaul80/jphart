@@ -3,9 +3,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/work/nextcoder", "destination": "/case-study-nextcoder.html" },
-    { "source": "/work/vidhart", "destination": "/case-study-vidhart.html" },
-    { "source": "/work/heftcoder", "destination": "/case-study-heftcoder.html" }
+    { "source": "/work/nextcoder", "destination": "/case-study-nextcoder" },
+    { "source": "/work/vidhart", "destination": "/case-study-vidhart" },
+    { "source": "/work/heftcoder", "destination": "/case-study-heftcoder" }
   ],
   "headers": [
     {
