@@ -1,29 +1,35 @@
 # paulhartmann.dev
 
-Multi-page portfolio and product studio site for Paul Hartmann. The experience is intentionally framework-free: semantic HTML, a shared token-based CSS system, small vanilla JavaScript interactions, and Vercel serverless functions.
+This is my personal site and small product studio home. It is intentionally simple: plain HTML, shared CSS tokens, a little JavaScript, and Vercel functions where the site needs server behavior.
+
+The site is a place to show work, explain what I build, and give people a clear way to contact me.
+
+Live site: [paulhartmann.dev](https://paulhartmann.dev)
 
 ## Routes
 
-- `/` — cinematic home with a lightweight Three.js identity object
-- `/work` and `/work/*` — portfolio archive and case studies
-- `/about`, `/pricing`, `/contact` — studio information and conversion paths
-- `/login` — GitHub and Google OAuth entry point
-- `/privacy-policy`, `/terms-of-service` — legal pages
+- `/` for the home page
+- `/work` and `/work/*` for the portfolio and case studies
+- `/about`, `/pricing`, and `/contact` for studio information
+- `/login` for GitHub and Google OAuth entry
+- `/privacy-policy` and `/terms-of-service` for legal pages
 
-## Local development
+## Run it locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Copy `.env.example` to `.env.local` and add only the services you intend to test. Never commit secret values.
+Copy `.env.example` to `.env.local` and add only the services you want to test. Do not commit secret values.
 
-## Production configuration
+## Production notes
 
-Stripe Checkout needs either `STRIPE_SECRET_KEY` or the three `STRIPE_PAYMENT_LINK_*` values. OAuth needs `AUTH_SECRET` plus the client ID and secret for each provider. Register these exact production callbacks:
+Stripe Checkout needs either `STRIPE_SECRET_KEY` or the `STRIPE_PAYMENT_LINK_*` values. OAuth needs `AUTH_SECRET` plus the client ID and secret for each provider.
+
+Use these production callbacks:
 
 - `https://paulhartmann.dev/api/auth/github`
 - `https://paulhartmann.dev/api/auth/google`
 
-Contact delivery uses `EMAIL_USER` and `EMAIL_PASSWORD`; the remaining email variables have safe defaults or are optional.
+Contact delivery uses `EMAIL_USER` and `EMAIL_PASSWORD`. The remaining email variables have defaults or are optional.
